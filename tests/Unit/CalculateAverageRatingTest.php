@@ -20,6 +20,34 @@ final class CalculateAverageRatingTest extends TestCase
         $this->ratingHandler = new RatingHandler();
     }
 
+    public function ratingsProvider(): iterable
+    {
+        yield 'Average rating of 1' => [
+            1,
+            1, 1,
+        ];
+
+        yield 'Average rating of 2' => [
+            2,
+            1, 2, 3,
+        ];
+
+        yield 'Average rating of 3' => [
+            3,
+            1, 2, 3, 4, 5,
+        ];
+
+        yield 'Average rating of 4' => [
+            4,
+            3, 4, 5,
+        ];
+
+        yield 'Average rating of 5' => [
+            5,
+            3, 4, 5, 5,
+        ];
+    }
+
     public function testCalculateAverageWithNoReview(): void
     {
         $this->ratingHandler->calculateAverage($this->videoGame);
@@ -33,5 +61,19 @@ final class CalculateAverageRatingTest extends TestCase
         $this->ratingHandler->calculateAverage($this->videoGame);
 
         $this->assertSame(5, $this->videoGame->getAverageRating());
+    }
+
+    /**
+     * @dataProvider ratingsProvider
+     */
+    public function testCalculateAverageWithMultipleReviews(int $expectedAverageRating, int ...$ratings): void
+    {
+        foreach ($ratings as $rating) {
+            $this->videoGame->getReviews()->add((new Review())->setRating($rating));
+        }
+
+        $this->ratingHandler->calculateAverage($this->videoGame);
+
+        $this->assertSame($expectedAverageRating, $this->videoGame->getAverageRating());
     }
 }
