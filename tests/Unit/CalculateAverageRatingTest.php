@@ -20,6 +20,9 @@ final class CalculateAverageRatingTest extends TestCase
         $this->ratingHandler = new RatingHandler();
     }
 
+    /**
+     * @return iterable<array<int>>
+     */
     public function ratingsProvider(): iterable
     {
         yield 'Average rating of 1' => [
