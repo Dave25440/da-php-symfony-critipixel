@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\VideoGame;
 
+use App\Model\Entity\Review;
 use App\Model\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\HttpFoundation\Response;
@@ -71,5 +73,29 @@ final class ReviewTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         $this->assertSelectorExists('form[name="review"]');
+    }
+
+    public function testPostReviewUnauthenticated(): void
+    {
+        $entityManager = $this->client->getContainer()->get(EntityManagerInterface::class);
+        $initialReviews = $entityManager->getRepository(Review::class)->count([]);
+
+        $this->client->request('POST', '/jeu-video-0', [
+            'review' => [
+                'rating' => 5,
+                'comment' => 'Jeu vidéo 0 est mon jeu de rôle préféré.',
+            ],
+        ]);
+
+        $finalReviews = $entityManager->getRepository(Review::class)->count([]);
+
+        $this->assertSame($initialReviews, $finalReviews);
+    }
+
+    public function testFormInvisibleToAnonymous(): void
+    {
+        $crawler = $this->client->request('GET', '/jeu-video-0');
+
+        $this->assertSelectorNotExists('form[name="review"]');
     }
 }
