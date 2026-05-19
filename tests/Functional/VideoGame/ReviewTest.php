@@ -16,7 +16,10 @@ final class ReviewTest extends WebTestCase
     public function setUp(): void
     {
         $this->client = static::createClient();
+    }
 
+    private function loginUser(): void
+    {
         $userRepository = $this->client->getContainer()->get('doctrine')->getRepository(User::class);
         $user = $userRepository->findOneByEmail('user+5@email.com');
 
@@ -34,6 +37,8 @@ final class ReviewTest extends WebTestCase
 
     public function testPostReview(): void
     {
+        $this->loginUser();
+
         $crawler = $this->client->request('GET', '/jeu-video-0');
 
         $form = $crawler->selectButton('Poster')->form();
@@ -55,6 +60,8 @@ final class ReviewTest extends WebTestCase
      */
     public function testPostReviewWithInvalidRating(?int $rating = null): void
     {
+        $this->loginUser();
+
         $this->client->request('POST', '/jeu-video-0', [
             'review' => [
                 'rating' => $rating,
