@@ -40,4 +40,17 @@ final class ReviewTest extends WebTestCase
         $this->assertSelectorTextContains('div.list-group-item:last-child p', 'Jeu vidéo 0 est mon jeu de rôle préféré.');
         $this->assertSelectorNotExists('form[name="review"]');
     }
+
+    public function testPostReviewWithInvalidRating(): void
+    {
+        $this->client->request('POST', '/jeu-video-0', [
+            'review' => [
+                'rating' => null,
+                'comment' => 'Jeu vidéo 0 est mon jeu de rôle préféré.',
+            ],
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $this->assertSelectorExists('form[name="review"]');
+    }
 }
