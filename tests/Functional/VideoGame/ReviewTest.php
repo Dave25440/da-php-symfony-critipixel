@@ -23,6 +23,15 @@ final class ReviewTest extends WebTestCase
         $this->client->loginUser($user);
     }
 
+    /**
+     * @return iterable<array{?int}>
+     */
+    public function ratingProvider(): iterable
+    {
+        yield 'No rating' => [null];
+        yield 'Rating outside the range' => [6];
+    }
+
     public function testPostReview(): void
     {
         $crawler = $this->client->request('GET', '/jeu-video-0');
@@ -41,11 +50,14 @@ final class ReviewTest extends WebTestCase
         $this->assertSelectorNotExists('form[name="review"]');
     }
 
-    public function testPostReviewWithInvalidRating(): void
+    /**
+     * @dataProvider ratingProvider
+     */
+    public function testPostReviewWithInvalidRating(?int $rating = null): void
     {
         $this->client->request('POST', '/jeu-video-0', [
             'review' => [
-                'rating' => null,
+                'rating' => $rating,
                 'comment' => 'Jeu vidéo 0 est mon jeu de rôle préféré.',
             ],
         ]);
