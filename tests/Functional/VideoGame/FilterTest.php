@@ -9,6 +9,17 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class FilterTest extends FunctionalTestCase
 {
+    /**
+     * @return iterable<array<array, int>>
+     */
+    public function tagsProvider(): iterable
+    {
+        yield 'No tags' => [[], 10];
+        yield 'One tag' => [[1], 10];
+        yield 'Two tags' => [[1, 2], 8];
+        yield 'Multiple tags' => [[1, 2, 3, 4, 5], 2];
+    }
+
     public function testShouldListTenVideoGames(): void
     {
         $this->get('/');
@@ -28,7 +39,10 @@ final class FilterTest extends FunctionalTestCase
         self::assertSelectorCount(1, 'article.game-card');
     }
 
-    public function testFilterVideoGamesByTags(): void
+    /**
+     * @dataProvider tagsProvider
+     */
+    public function testFilterVideoGamesByTags(array $tags, int $expectedCount): void
     {
         $crawler = $this->client->request('GET', '/');
 
@@ -37,14 +51,19 @@ final class FilterTest extends FunctionalTestCase
         $this->assertSelectorTextSame('article.card.game-card:first-child span.tag:first-child', 'Tag 0');
 
         $form = $crawler->selectButton('Filtrer')->form();
-        $form['filter[tags][0]'] = 1;
+        $form['filter[tags]'] = $tags;
 
         $this->assertSame('GET', $form->getMethod());
         $this->client->submit($form);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
-        $this->assertSelectorCount(10, 'article.card.game-card');
-        $this->assertSelectorTextSame('article.card.game-card:first-child span.tag:first-child', 'Tag 0');
-        $this->assertSelectorTextSame('article.card.game-card:last-child span.tag:first-child', 'Tag 0');
+        $this->assertSelectorCount($expectedCount, 'article.card.game-card');
+
+        $allTags = $crawler->filter('article.card.game-card span.tag')->each(fn($node) => trim($node->text()));
+
+        foreach ($tags as $tag) {
+            $expectedTag = 'Tag ' . ($tag - 1);
+            $this->assertContains($expectedTag, $allTags);
+        }
     }
 }
