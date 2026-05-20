@@ -66,4 +66,13 @@ final class FilterTest extends FunctionalTestCase
             $this->assertContains($expectedTag, $allTags);
         }
     }
+
+    public function testFilterVideoGamesByInvalidTag(): void
+    {
+        $crawler = $this->client->request('GET', '/', ['filter' => ['tags' => [26]]]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $this->assertSelectorCount(10, 'article.card.game-card');
+        $this->assertSelectorTextSame('article.card.game-card:first-child span.tag:first-child', 'Tag 0');
+    }
 }
