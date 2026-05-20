@@ -13,11 +13,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class ReviewTest extends WebTestCase
 {
-    private KernelBrowser $client;
+    private ?KernelBrowser $client;
+    private ?EntityManagerInterface $entityManager;
 
     public function setUp(): void
     {
         $this->client = static::createClient();
+        $this->entityManager = $this->client->getContainer()->get(EntityManagerInterface::class);
     }
 
     private function loginUser(): void
@@ -77,8 +79,7 @@ final class ReviewTest extends WebTestCase
 
     public function testPostReviewUnauthenticated(): void
     {
-        $entityManager = $this->client->getContainer()->get(EntityManagerInterface::class);
-        $initialReviews = $entityManager->getRepository(Review::class)->count([]);
+        $initialReviews = $this->entityManager->getRepository(Review::class)->count([]);
 
         $this->client->request('POST', '/jeu-video-0', [
             'review' => [
@@ -87,7 +88,7 @@ final class ReviewTest extends WebTestCase
             ],
         ]);
 
-        $finalReviews = $entityManager->getRepository(Review::class)->count([]);
+        $finalReviews = $this->entityManager->getRepository(Review::class)->count([]);
 
         $this->assertSame($initialReviews, $finalReviews);
     }
@@ -97,5 +98,26 @@ final class ReviewTest extends WebTestCase
         $crawler = $this->client->request('GET', '/jeu-video-0');
 
         $this->assertSelectorNotExists('form[name="review"]');
+    }
+
+    public function tearDown(): void
+    {
+        $review = $this->entityManager
+            ->getRepository(Review::class)
+            ->findOneBy([
+                'rating' => 5,
+                'comment' => 'Jeu vidéo 0 est mon jeu de rôle préféré.',
+            ]);
+
+        if ($review) {
+            $this->entityManager->remove($review);
+            $this->entityManager->flush();
+            $review = null;
+        }
+
+        parent::tearDown();
+
+        $this->entityManager = null;
+        $this->client = null;
     }
 }
