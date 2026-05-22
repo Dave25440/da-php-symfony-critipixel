@@ -84,6 +84,7 @@ final class CountRatingsPerValueTest extends TestCase
         $this->ratingHandler->countRatingsPerValue($this->videoGame);
 
         $this->assertEquals(new NumberOfRatingPerValue(), $this->videoGame->getNumberOfRatingsPerValue());
+        $this->assertCount(0, $this->videoGame->getReviews());
     }
 
     public function testCountRatingsPerValueWithOneReview(): void
@@ -92,6 +93,7 @@ final class CountRatingsPerValueTest extends TestCase
         $this->ratingHandler->countRatingsPerValue($this->videoGame);
 
         $this->assertSame(1, $this->videoGame->getNumberOfRatingsPerValue()->getNumberOfFive());
+        $this->assertCount(1, $this->videoGame->getReviews());
     }
 
     /**
@@ -106,5 +108,6 @@ final class CountRatingsPerValueTest extends TestCase
         $this->ratingHandler->countRatingsPerValue($this->videoGame);
 
         $this->assertEquals($expectedNumberOfRatingPerValue, $this->videoGame->getNumberOfRatingsPerValue());
+        $this->assertCount(count($ratings), $this->videoGame->getReviews());
     }
 }
