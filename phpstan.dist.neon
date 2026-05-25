@@ -16,6 +16,8 @@ parameters:
         - var/cache/dev/Symfony/Config
     doctrine:
         objectManagerLoader: tests/object-manager.php
+    strictRules:
+        dynamicCallOnStaticMethod: false
     level: 6
     paths:
         - bin/
