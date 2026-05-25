@@ -87,6 +87,7 @@
             "symfony console doctrine:migrations:migrate -n --env=test",
             "symfony console doctrine:fixtures:load -n --purge-with-truncate --env=test"
         ],
+        "phpstan": "php -d memory_limit=512M vendor/bin/phpstan",
         "test": [
             "composer db-test",
             "symfony php bin/phpunit"
