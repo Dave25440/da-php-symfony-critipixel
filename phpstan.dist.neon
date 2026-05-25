@@ -1,4 +1,6 @@
 includes:
+    - vendor/phpstan/phpstan-doctrine/extension.neon
+    - vendor/phpstan/phpstan-doctrine/rules.neon
     - vendor/phpstan/phpstan-symfony/extension.neon
     - vendor/phpstan/phpstan-symfony/rules.neon
 
@@ -8,6 +10,8 @@ parameters:
         consoleApplicationLoader: tests/console-application.php
     scanDirectories:
         - var/cache/dev/Symfony/Config
+    doctrine:
+        objectManagerLoader: tests/object-manager.php
     level: 6
     paths:
         - bin/
