@@ -49,7 +49,7 @@ final class CountRatingsPerValueTest extends TestCase
     }
 
     /**
-     * @return iterable<array{NumberOfRatingPerValue, int, int...}>
+     * @return iterable<array{0: NumberOfRatingPerValue, 1: int, 2?: int, 3?: int, 4?: int, 5?: int}>
      */
     public function ratingsProvider(): iterable
     {

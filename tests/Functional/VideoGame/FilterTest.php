@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 final class FilterTest extends FunctionalTestCase
 {
     /**
-     * @return iterable<array<array, int>>
+     * @return iterable<array{0: int[], 1: int}>
      */
     public function tagsProvider(): iterable
     {
@@ -41,6 +41,7 @@ final class FilterTest extends FunctionalTestCase
 
     /**
      * @dataProvider tagsProvider
+     * @param int[] $tags
      */
     public function testFilterVideoGamesByTags(array $tags, int $expectedCount): void
     {

@@ -46,7 +46,7 @@ final class ReviewTest extends WebTestCase
         $crawler = $this->client->request('GET', '/jeu-video-0');
 
         $form = $crawler->selectButton('Poster')->form();
-        $form['review[rating]'] = 5;
+        $form['review[rating]'] = '5';
         $form['review[comment]'] = 'Jeu vidéo 0 est mon jeu de rôle préféré.';
 
         $this->client->submit($form);
@@ -109,7 +109,7 @@ final class ReviewTest extends WebTestCase
                 'comment' => 'Jeu vidéo 0 est mon jeu de rôle préféré.',
             ]);
 
-        if ($review) {
+        if ($review !== null) {
             $this->entityManager->remove($review);
             $this->entityManager->flush();
             $review = null;
