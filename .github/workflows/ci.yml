@@ -11,8 +11,6 @@ jobs:
   ci:
     name: Continuous Integration
     runs-on: ubuntu-latest
-    env:
-      APP_ENV: test
 
     # Docs: https://docs.github.com/en/actions/using-containerized-services
     services:
@@ -57,17 +55,14 @@ jobs:
 
       - name: Create database
         run: |
-          php bin/console doctrine:database:create --if-not-exists
-          php bin/console doctrine:schema:create --no-interaction
-          php bin/console doctrine:fixtures:load --no-interaction
+          php bin/console doctrine:database:create --if-not-exists --env=test
+          php bin/console doctrine:schema:create --no-interaction --env=test
+          php bin/console doctrine:fixtures:load --no-interaction --env=test
         env:
           DATABASE_URL: mysql://root:root@127.0.0.1:${{ job.services.mysql.ports['3306'] }}/critipixel?serverVersion=8.4&charset=utf8mb4
 
       - name: Compile Sass files
         run: php bin/console sass:build
-
-      - name: Warmup Symfony cache
-        run: php bin/console cache:warmup
 
       - name: Execute tests
         run: php bin/phpunit
