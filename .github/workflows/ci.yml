@@ -66,6 +66,9 @@ jobs:
       - name: Compile Sass files
         run: php bin/console sass:build
 
+      - name: Warmup Symfony cache
+        run: php bin/console cache:warmup
+
       - name: Execute tests
         run: php bin/phpunit
         env:
