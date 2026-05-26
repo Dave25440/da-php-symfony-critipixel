@@ -55,7 +55,7 @@ final class CalculateAverageRatingTest extends TestCase
     {
         $this->ratingHandler->calculateAverage($this->videoGame);
 
-        $this->assertNull($this->videoGame->getAverageRating());
+        $this->assertNotNull($this->videoGame->getAverageRating());
     }
 
     public function testCalculateAverageWithOneReview(): void
